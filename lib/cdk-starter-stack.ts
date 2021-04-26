@@ -14,7 +14,7 @@ export class CdkStarterStack extends cdk.Stack {
 
     // 👇 Create Managed Policy
     const loggingManagedPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName(
-      'service-role/AWSLambdaBasicExecutionRole',
+      'CloudWatchReadOnlyAccess',
     );
 
     // 👇 Create Permissions Boundary
@@ -40,20 +40,22 @@ export class CdkStarterStack extends cdk.Stack {
       permissionsBoundary,
     });
 
-    // user.addManagedPolicy(
-    //   iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'),
-    // );
+    // 👇 add a managed policy to the user
+    user.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'),
+    );
 
-    // const inlinePolicy = new iam.Policy(this, 'cloudwatch-logs-policy', {
-    //   statements: [
-    //     new iam.PolicyStatement({
-    //       actions: ['logs:PutLogEvents'],
-    //       resources: ['*'],
-    //     }),
-    //   ],
-    // });
-    // user.attachInlinePolicy(inlinePolicy);
+    // 👇 create an inline policy
+    const inlinePolicy = new iam.Policy(this, 'cloudwatch-logs-policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['logs:PutLogEvents'],
+          resources: ['*'],
+        }),
+      ],
+    });
 
-    // user.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    // 👇 attach the inline policy to the user
+    user.attachInlinePolicy(inlinePolicy);
   }
 }
